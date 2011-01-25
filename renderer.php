@@ -21,6 +21,11 @@ require_once DOKU_INC . 'inc/parser/renderer.php';
 class renderer_plugin_xml extends Doku_Renderer {
     
     function __construct() {
+        $this->reset();
+    }
+
+    // allows renderer to be used again, clean out any per-use values
+    function reset() {
         $this->info = array(
             'cache' => true, // may the rendered result cached?
             'toc'   => false, // render the TOC?
@@ -28,6 +33,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->precedinglevel = array();
         $this->nextHeader     = "";
         $this->helper         = &plugin_load('helper','xml');
+        $this->doc            = '';
     }
 
     /**
