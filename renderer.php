@@ -87,7 +87,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     function header($text, $level, $pos) {
         if (!$text) return; //skip empty headlines
         $this->nextHeader  = '<header level="' . $level . '" pos="' . $pos . '">'.
-        $this->nextHeader .= $text;
+        $this->nextHeader .= $this->_xmlEntities($text);
         $this->nextHeader .= '</header>'.DOKU_LF;
     }
 
