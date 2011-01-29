@@ -1,6 +1,6 @@
 author Danny Lin
 email  danny0838[at]pchome[dot]com[dot]tw
-date   2011-01-28
+date   2011-01-29
 name   xml
 desc   Renders dokuwiki as simple XML output.
 url    http://www.dokuwiki.org/plugin:xml

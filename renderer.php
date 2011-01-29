@@ -130,7 +130,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function linebreak() {
-        $this->doc .= '<linebreak/>'.DOKU_LF;
+        $this->doc .= '<linebreak/>';
     }
 
     function hr() {
@@ -242,13 +242,25 @@ class renderer_plugin_xml extends Doku_Renderer {
     function php($text) {
         $this->doc .= '<php>';
         $this->doc .= $this->_xmlEntities($text);
-        $this->doc .= '</php>'.DOKU_LF;
+        $this->doc .= '</php>';
+    }
+
+    function phpblock($text) {
+        $this->doc .= '<phpblock>';
+        $this->doc .= $this->_xmlEntities($text);
+        $this->doc .= '</phpblock>'.DOKU_LF;
     }
 
     function html($text) {
         $this->doc .= '<html>';
         $this->doc .= $this->_xmlEntities($text);
-        $this->doc .= '</html>'.DOKU_LF;
+        $this->doc .= '</html>';
+    }
+
+    function htmlblock($text) {
+        $this->doc .= '<htmlblock>';
+        $this->doc .= $this->_xmlEntities($text);
+        $this->doc .= '</htmlblock>'.DOKU_LF;
     }
 
     function preformatted($text) {
