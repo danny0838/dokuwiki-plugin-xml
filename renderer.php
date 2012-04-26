@@ -303,7 +303,7 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function entity($entity) {
         $this->doc .= '<entity>';
-        $this->doc .= $this->_xmlEntities($entety);
+        $this->doc .= $this->_xmlEntities($entity);
         $this->doc .= '</entity>';
     }
 
