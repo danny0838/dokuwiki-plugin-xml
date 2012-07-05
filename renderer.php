@@ -432,16 +432,24 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</tablerow>'.DOKU_LF;
     }
 
-    function tableheader_open($colspan = 1, $align = NULL){
-        $this->doc .= '<tableheader colspan="' . $colspan . '" align="' . $align . '">';
+    function tableheader_open($colspan = 1, $align = NULL, $rowspan = 1){
+        $this->doc .= '<tableheader';
+        if ($colspan>1) $this->doc .= ' colspan="' . $colspan . '"';
+        if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
+        if ($align) $this->doc .= ' align="' . $align . '"';
+        $this->doc .= '>';
     }
 
     function tableheader_close(){
         $this->doc .= '</tableheader>';
     }
 
-    function tablecell_open($colspan = 1, $align = NULL){
-        $this->doc .= '<tablecell colspan="' . $colspan . '" align="' . $align . '">';
+    function tablecell_open($colspan = 1, $align = NULL, $rowspan = 1){
+        $this->doc .= '<tablecell';
+        if ($colspan>1) $this->doc .= ' colspan="' . $colspan . '"';
+        if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
+        if ($align) $this->doc .= ' align="' . $align . '"';
+        $this->doc .= '>';
     }
 
     function tablecell_close(){
