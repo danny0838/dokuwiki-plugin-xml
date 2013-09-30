@@ -19,12 +19,14 @@ if (!defined('DOKU_TAB')) define('DOKU_TAB', "\t");
 require_once DOKU_INC . 'inc/parser/renderer.php';
 
 class renderer_plugin_xml extends Doku_Renderer {
-    
+
     function __construct() {
         $this->reset();
     }
 
-    // allows renderer to be used again, clean out any per-use values
+    /**
+     * Allows renderer to be used again. Clean out any per-use values.
+     */
     function reset() {
         $this->info = array(
             'cache' => true, // may the rendered result cached?
@@ -39,7 +41,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     /**
      * Returns the format produced by this renderer.
      *
-     * Has to be overidden by decendend classes
+     * @return string
      */
     function getFormat(){return 'xml';}
 
@@ -277,13 +279,13 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</quote>'.DOKU_LF;
     }
 
-    function code($text, $lang = NULL, $file = NULL) {
+    function code($text, $lang = null, $file = null) {
         $this->doc .= '<code lang="' . $lang . '" file="' . $file . '">';
         $this->doc .= $this->_xmlEntities($text);
         $this->doc .= '</code>'.DOKU_LF;
     }
 
-    function file($text, $lang = NULL, $file = NULL) {
+    function file($text, $lang = null, $file = null) {
         $this->doc .= '<file lang="' . $lang . '" file="' . $file . '">';
         $this->doc .= $this->_xmlEntities($text);
         $this->doc .= '</file>'.DOKU_LF;
@@ -307,7 +309,12 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</entity>';
     }
 
-    // 640x480 ($x=640, $y=480)
+    /**
+     * Multiply entities are of the form: 640x480 where $x=640 and $y=480
+     *
+     * @param string $x The left hand operand
+     * @param string $y The rigth hand operand
+     */
     function multiplyentity($x, $y) {
         $this->doc .= '<multiplyentity>';
         $this->doc .= '<x>'.$this->_xmlEntities($x).'</x>';
@@ -335,88 +342,115 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</doublequote>';
     }
 
-    // $link like 'SomePage'
+    /**
+     * Links in CamelCase format.
+     *
+     * @param string $link Link text
+     */
     function camelcaselink($link) {
         $this->doc .= '<link type="camelcase" href="' . $this->_xmlEntities($link) . '">';
         $this->doc .= $this->_xmlEntities($link);
         $this->doc .= '</link>';
     }
 
-    function locallink($hash, $name = NULL) {
+    function locallink($hash, $name = null) {
         $this->doc .= '<link type="locallink" href="' . $this->_xmlEntities($hash) . '">';
         $this->doc .= $this->_getLinkTitle($name, $hash);
         $this->doc .= '</link>';
     }
 
-    // $link like 'wiki:syntax', $title could be an array (media)
-    function internallink($link, $title = NULL) {
+    /**
+     * Links of the form 'wiki:syntax', where $title is either a string or (for
+     * media links) an array.
+     *
+     * @param string $link The link text
+     * @param mixed $title Title text (array for media links)
+     */
+    function internallink($link, $title = null) {
         $this->doc .= '<link type="internal" href="' . $this->_xmlEntities($link) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
 
-    // $link is full URL with scheme, $title could be an array (media)
-    function externallink($link, $title = NULL) {
+    /**
+     * Full URL links with scheme. $title could be an array, for media links.
+     *
+     * @param string $link The link text
+     * @param mixed $title Title text (array for media links)
+     */
+    function externallink($link, $title = null) {
         $this->doc .= '<link type="external" href="' . $this->_xmlEntities($link) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
 
-    // $link is the original link - probably not much use
-    // $wikiName is an indentifier for the wiki
-    // $wikiUri is the URL fragment to append to some known URL
-    function interwikilink($link, $title = NULL, $wikiname, $wikiuri) {
+    /**
+     * @param string $link the original link - probably not much use
+     * @param string $title
+     * @param string $wikiname an indentifier for the wiki
+     * @param string $wikiuri the URL fragment to append to some known URL
+     */
+    function interwikilink($link, $title, $wikiname, $wikiuri) {
         $this->doc .= '<link type="interwiki" href="' . $this->_xmlEntities($link) . '" wikiname="' . $this->_xmlEntities($wikiname) . '" wikiuri="' . $this->_xmlEntities($wikiuri) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
 
-    // Link to file on users OS, $title could be an array (media)
-    function filelink($link, $title = NULL) {
+    /**
+     * Link to a file on user's OS. $title could be an array (for media links).
+     *
+     * @param string $link
+     * @param mixed $title 
+     */
+    function filelink($link, $title = null) {
         $this->doc .= '<link type="filelink" href="' . $this->_xmlEntities($link) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
 
-    // Link to a Windows share, , $title could be an array (media)
-    function windowssharelink($link, $title = NULL) {
+    /**
+     * Link to a Windows share, $title could be an array (media)
+     *
+     * @param string $link
+     * @param mixed $title
+     */
+    function windowssharelink($link, $title = null) {
         $this->doc .= '<link type="windowssharelink" href="' . $this->_xmlEntities($link) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
 
-//  function email($address, $title = NULL) {}
-    function emaillink($address, $name = NULL) {
+    function emaillink($address, $name = null) {
         $this->doc .= '<link type="emaillink" href="' . $this->_xmlEntities($address) . '">';
         $this->doc .= $this->_getLinkTitle($name, $address);
         $this->doc .= '</link>';
 }
 
-    function internalmedia ($src, $title=NULL, $align=NULL, $width=NULL, $height=NULL, $cache=NULL, $linking=NULL) {
+    function internalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
         $this->doc .= '<media type="internalmedia" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">'.DOKU_LF;
         $this->doc .= $this->_xmlEntities($title, $src);
         $this->doc .= '</media>';
     }
 
-    function externalmedia ($src, $title=NULL, $align=NULL, $width=NULL, $height=NULL, $cache=NULL, $linking=NULL) {
+    function externalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
         $this->doc .= '<media type="externalmedia" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">';
         $this->doc .= $this->_xmlEntities($title, $src);
         $this->doc .= '</media>';
     }
 
-    function internalmedialink ($src, $title=NULL, $align=NULL, $width=NULL, $height=NULL, $cache=NULL) {
+    function internalmedialink ($src, $title=null, $align=null, $width=null, $height=null, $cache=null) {
         $this->doc .= '<link type="internalmedialink" href="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '">';
         $this->doc .= $this->_xmlEntities($title, $src);
         $this->doc .= '</link>';
     }
 
-    function externalmedialink($src, $title=NULL, $align=NULL, $width=NULL, $height=NULL, $cache=NULL) {
+    function externalmedialink($src, $title=null, $align=null, $width=null, $height=null, $cache=null) {
         $this->doc .= '<link type="externalmedialink"  href="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '">';
         $this->doc .= $this->_xmlEntities($title, $src);
         $this->doc .= '</externalmedialink>';
     }
 
-    function table_open($maxcols = NULL, $numrows = NULL){
+    function table_open($maxcols = null, $numrows = null){
         $this->doc .= '<table maxcols="' . $maxcols . '" numrows="' . $numrows . '">'.DOKU_LF;
     }
 
@@ -432,7 +466,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</tablerow>'.DOKU_LF;
     }
 
-    function tableheader_open($colspan = 1, $align = NULL, $rowspan = 1){
+    function tableheader_open($colspan = 1, $align = null, $rowspan = 1){
         $this->doc .= '<tableheader';
         if ($colspan>1) $this->doc .= ' colspan="' . $colspan . '"';
         if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
@@ -444,7 +478,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '</tableheader>';
     }
 
-    function tablecell_open($colspan = 1, $align = NULL, $rowspan = 1){
+    function tablecell_open($colspan = 1, $align = null, $rowspan = 1) {
         $this->doc .= '<tablecell';
         if ($colspan>1) $this->doc .= ' colspan="' . $colspan . '"';
         if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
@@ -457,18 +491,24 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     /**
-     * Private functions for internal handling
+     * Private function for internal handling
      */
     function _xmlEntities($text){
         return htmlspecialchars($text,ENT_COMPAT,'UTF-8');
     }
-    
+
+    /**
+     * Private function for internal handling
+     */
     function _getLinkTitle($title, $default){
         if ( is_array($title) ) return $this->_imageTitle($title);
         if ( is_null($title) || trim($title)=='' ) $title = $default;
         return $this->_xmlEntities($title);
     }
-    
+
+    /**
+     * Private function for internal handling
+     */
     function _imageTitle($img) {
         extract($img);
         $out .= '<media type="' . $type . '" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">';
@@ -476,4 +516,5 @@ class renderer_plugin_xml extends Doku_Renderer {
         $out .= '</media>';
         return $out;
     }
+
 }
