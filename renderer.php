@@ -424,16 +424,68 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->doc .= '<link type="emaillink" href="' . $this->_xmlEntities($address) . '">';
         $this->doc .= $this->_getLinkTitle($name, $address);
         $this->doc .= '</link>';
-}
-
-    function internalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
-        $this->doc .= '<media type="internalmedia" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">'.DOKU_LF;
-        $this->doc .= $this->_xmlEntities($title, $src);
-        $this->doc .= '</media>';
     }
 
+    /**
+     * Render media that is internal to the wiki.
+     *
+     * @param string $src
+     * @param string $title
+     * @param string $align
+     * @param string $width
+     * @param string $height
+     * @param string $cache
+     * @param string $linking
+     */
+    function internalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
+        $this->media('internalmedia', $src, $title, $align, $width, $height, $cache, $linking);
+    }
+
+    /**
+     * Render media that is external to the wiki.
+     *
+     * @param string $src
+     * @param string $title
+     * @param string $align
+     * @param string $width
+     * @param string $height
+     * @param string $cache
+     * @param string $linking
+     */
     function externalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
-        $this->doc .= '<media type="externalmedia" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">';
+        $this->media('externalmedia', $src, $title, $align, $width, $height, $cache, $linking);
+    }
+
+    /**
+     * Render media elements.
+     * @see Doku_Renderer_xhtml::internalmedia()
+     *
+     * @param string $type Either 'internalmedia' or 'externalmedia'
+     * @param string $src
+     * @param string $title
+     * @param string $align
+     * @param string $width
+     * @param string $height
+     * @param string $cache
+     * @param string $linking
+     */
+    function media($type, $src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
+        global $ID;
+        list($ext, $mime, $dl) = mimetype($src, false);
+
+        // Everything is linked directly apart from images without 'linkonly'.
+        $details = (substr($mime, 0, 5)=='image' && $linking!='linkonly');
+        $link_attrs = array('id'=>$ID, 'cache'=>$cache);
+        $href = ml($src, $link_attrs, !$details, null, true);
+
+        // Filename
+        $basename = ($type=='externalmedia') ? basename($src) : noNS($src);
+
+        $this->doc .= '<media type="' . $type . '" src="' . $this->_xmlEntities($src) . '"';
+        $this->doc .= ' basename="' . $basename . '" href="' . $href . '"';
+        $this->doc .= ' mimetype="' . $mime . '" ext="' . $ext . '"';
+        $this->doc .= ' align="' . $align . '" width="' . $width . '" height="' . $height . '"';
+        $this->doc .= ' cache="' . $cache . '" linking="' . $linking . '">'.DOKU_LF;
         $this->doc .= $this->_xmlEntities($title, $src);
         $this->doc .= '</media>';
     }
