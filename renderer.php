@@ -368,7 +368,7 @@ class renderer_plugin_xml extends Doku_Renderer {
      */
     function internallink($link, $title = null) {
         $this->doc .= '<link type="internal" href="' . $this->_xmlEntities($link) . '">';
-        $this->doc .= $this->_getLinkTitle($title, $link);
+        $this->doc .= $this->_getLinkTitle($title, $this->_simpleTitle($link));
         $this->doc .= '</link>';
     }
 
