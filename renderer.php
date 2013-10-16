@@ -33,6 +33,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->nextHeader     = "";
         $this->helper         = &plugin_load('helper','xml');
         $this->doc            = '';
+        $this->tagStack       = array();
     }
 
     /**
@@ -76,8 +77,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function document_end() {
-        while(count($this->precedinglevel)>0)
-        {
+        while(count($this->precedinglevel)>0) {
             $this->doc .= '</section>'.'<!--' . array_pop($this->precedinglevel) .  '-->'.DOKU_LF;
         }
         $this->doc .= '</document>'.DOKU_LF;
@@ -122,9 +122,11 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function p_open() {
         $this->doc .= '<p>';
+        $this->_openTag($this, 'p_close', array());
     }
 
     function p_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</p>'.DOKU_LF;
     }
 
@@ -138,97 +140,121 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function strong_open() {
         $this->doc .= '<strong>';
+        $this->_openTag($this, 'strong_close', array());
     }
 
     function strong_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</strong>';
     }
 
     function emphasis_open() {
         $this->doc .= '<emphasis>';
+        $this->_openTag($this, 'emphasis_close', array());
     }
 
     function emphasis_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</emphasis>';
     }
 
     function underline_open() {
         $this->doc .= '<underline>';
+        $this->_openTag($this, 'underline_close', array());
     }
 
     function underline_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</underline>';
     }
 
     function monospace_open() {
         $this->doc .= '<monospace>';
+        $this->_openTag($this, 'monospace_close', array());
     }
 
     function monospace_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</monospace>';
     }
 
     function subscript_open() {
         $this->doc .= '<subscript>';
+        $this->_openTag($this, 'subscript_close', array());
     }
 
     function subscript_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</subscript>';
     }
 
     function superscript_open() {
         $this->doc .= '<superscript>';
+        $this->_openTag($this, 'superscript_close', array());
     }
 
     function superscript_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</superscript>';
     }
 
     function deleted_open() {
         $this->doc .= '<delete>';
+        $this->_openTag($this, 'deleted_close', array());
     }
 
     function deleted_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</delete>';
     }
 
     function footnote_open() {
         $this->doc .= '<footnote>';
+        $this->_openTag($this, 'footnote_close', array());
     }
 
     function footnote_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</footnote>';
     }
 
     function listu_open() {
         $this->doc .= '<listu>'.DOKU_LF;
+        $this->_openTag($this, 'listu_close', array());
     }
 
     function listu_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</listu>'.DOKU_LF;
     }
 
     function listo_open() {
         $this->doc .= '<listo>'.DOKU_LF;
+        $this->_openTag($this, 'listo_close', array());
     }
 
     function listo_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</listo>'.DOKU_LF;
     }
 
     function listitem_open($level) {
         $this->doc .= DOKU_TAB.'<listitem level="' . $level . '">';
+        $this->_openTag($this, 'listitem_close', array());
     }
 
     function listitem_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</listitem>'.DOKU_LF;
     }
 
     function listcontent_open() {
         $this->doc .= '<listcontent>';
+        $this->_openTag($this, 'listcontent_close', array());
     }
 
     function listcontent_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</listcontent>';
     }
 
@@ -270,9 +296,11 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function quote_open() {
         $this->doc .= '<quote>';
+        $this->_openTag($this, 'quote_close', array());
     }
 
     function quote_close() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</quote>'.DOKU_LF;
     }
 
@@ -321,9 +349,11 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function singlequoteopening() {
         $this->doc .= '<singlequote>';
+        $this->_openTag($this, 'singlequoteclosing', array());
     }
 
     function singlequoteclosing() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</singlequote>';
     }
 
@@ -333,9 +363,11 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function doublequoteopening() {
         $this->doc .= '<doublequote>';
+        $this->_openTag($this, 'doublequoteclosing', array());
     }
 
     function doublequoteclosing() {
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</doublequote>';
     }
 
@@ -501,17 +533,21 @@ class renderer_plugin_xml extends Doku_Renderer {
 
     function table_open($maxcols = null, $numrows = null){
         $this->doc .= '<table maxcols="' . $maxcols . '" numrows="' . $numrows . '">'.DOKU_LF;
+        $this->_openTag($this, 'table_close', array());
     }
 
     function table_close(){
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</table>'.DOKU_LF;
     }
 
     function tablerow_open(){
         $this->doc .= DOKU_TAB.'<tablerow>';
+        $this->_openTag($this, 'tablerow_close', array());
     }
 
     function tablerow_close(){
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</tablerow>'.DOKU_LF;
     }
 
@@ -521,9 +557,11 @@ class renderer_plugin_xml extends Doku_Renderer {
         if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
         if ($align) $this->doc .= ' align="' . $align . '"';
         $this->doc .= '>';
+        $this->_openTag($this, 'tableheader_close', array());
     }
 
     function tableheader_close(){
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</tableheader>';
     }
 
@@ -533,9 +571,11 @@ class renderer_plugin_xml extends Doku_Renderer {
         if ($rowspan>1) $this->doc .= ' rowspan="' . $rowspan . '"';
         if ($align) $this->doc .= ' align="' . $align . '"';
         $this->doc .= '>';
+        $this->_openTag($this, 'tablecell_close', array());
     }
 
     function tablecell_close(){
+        $this->_closeTags($this, __FUNCTION__);
         $this->doc .= '</tablecell>';
     }
 
@@ -559,5 +599,19 @@ class renderer_plugin_xml extends Doku_Renderer {
         $out .= '</media>';
         return $out;
     }
+    
+    function _openTag($class, $func, $data=null) {
+        $this->tagStack[] = array($class, $func, $data);
+    }
 
+    function _closeTags($class=null, $func=null) {
+        if ($this->tagClosing==true) return;  // skip nested calls
+        $this->tagClosing = true;
+        while(count($this->tagStack)>0) {
+            list($lastclass, $lastfunc, $lastdata) = array_pop($this->tagStack);
+            if (!($lastclass==$class && $lastfunc==$func)) call_user_func_array( array($lastclass, $lastfunc), $lastdata );
+            else break;
+        }
+        $this->tagClosing = false;
+    }
 }
