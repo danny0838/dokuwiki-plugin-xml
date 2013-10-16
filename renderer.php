@@ -2,12 +2,9 @@
 /**
  * DokuWiki Plugin xml
  *
- * Original:
  * @author   Patrick Bueker <Patrick@patrickbueker.de>
+ * @author   Danny Lin <danny0838@gmail.com>
  * @license  GPLv2 or later (http://www.gnu.org/licenses/gpl.html)
- *
- * Reworked:
- * @author   Danny Lin <danny0838@pchome.com.tw>
  *
  */
 
