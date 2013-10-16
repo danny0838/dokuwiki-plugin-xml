@@ -543,24 +543,18 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     /**
-     * Private function for internal handling
+     * Private functions for internal handling
      */
     function _xmlEntities($text){
         return htmlspecialchars($text,ENT_COMPAT,'UTF-8');
     }
 
-    /**
-     * Private function for internal handling
-     */
     function _getLinkTitle($title, $default){
         if ( is_array($title) ) return $this->_imageTitle($title);
         if ( is_null($title) || trim($title)=='' ) $title = $default;
         return $this->_xmlEntities($title);
     }
 
-    /**
-     * Private function for internal handling
-     */
     function _imageTitle($img) {
         extract($img);
         $out .= '<media type="' . $type . '" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">';
