@@ -609,7 +609,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         $this->tagClosing = true;
         while(count($this->tagStack)>0) {
             list($lastclass, $lastfunc, $lastdata) = array_pop($this->tagStack);
-            if (!($lastclass==$class && $lastfunc==$func)) call_user_func_array( array($lastclass, $lastfunc), $lastdata );
+            if (!($lastclass===$class && $lastfunc==$func)) call_user_func_array( array($lastclass, $lastfunc), $lastdata );
             else break;
         }
         $this->tagClosing = false;
