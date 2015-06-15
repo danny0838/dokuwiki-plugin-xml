@@ -317,7 +317,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function acronym($acronym) {
-        $this->doc .= '<acronym>';
+        $this->doc .= '<acronym data="' . $this->_xmlEntities($this->acronyms[$acronym]) . '">';
         $this->doc .= $this->_xmlEntities($acronym);
         $this->doc .= '</acronym>';
     }
@@ -329,7 +329,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function entity($entity) {
-        $this->doc .= '<entity>';
+        $this->doc .= '<entity data="' . $this->_xmlEntities($this->entities[$entity]) . '">';
         $this->doc .= $this->_xmlEntities($entity);
         $this->doc .= '</entity>';
     }
@@ -348,7 +348,8 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function singlequoteopening() {
-        $this->doc .= '<singlequote>';
+        global $lang;
+        $this->doc .= '<singlequote open="' . $this->_xmlEntities($lang['singlequoteopening']) . '" close="' . $this->_xmlEntities($lang['singlequoteclosing']) . '">';
         $this->_openTag($this, 'singlequoteclosing', array());
     }
 
@@ -358,11 +359,13 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function apostrophe() {
-        $this->doc .= '<apostrophe/>';
+        global $lang;
+        $this->doc .= '<apostrophe data="' . $this->_xmlEntities($lang['apostrophe']) . '"/>';
     }
 
     function doublequoteopening() {
-        $this->doc .= '<doublequote>';
+        global $lang;
+        $this->doc .= '<doublequote open="' . $this->_xmlEntities($lang['doublequoteopening']) . '" close="' . $this->_xmlEntities($lang['doublequoteclosing']) . '">';
         $this->_openTag($this, 'doublequoteclosing', array());
     }
 
@@ -420,7 +423,7 @@ class renderer_plugin_xml extends Doku_Renderer {
      * @param string $wikiuri the URL fragment to append to some known URL
      */
     function interwikilink($link, $title, $wikiname, $wikiuri) {
-        $this->doc .= '<link type="interwiki" href="' . $this->_xmlEntities($link) . '" wikiname="' . $this->_xmlEntities($wikiname) . '" wikiuri="' . $this->_xmlEntities($wikiuri) . '">';
+        $this->doc .= '<link type="interwiki" href="' . $this->_resolveInterWiki($wikiname, $wikiuri) . '" wikiname="' . $this->_xmlEntities($wikiname) . '" wikiuri="' . $this->_xmlEntities($wikiuri) . '">';
         $this->doc .= $this->_getLinkTitle($title, $link);
         $this->doc .= '</link>';
     }
