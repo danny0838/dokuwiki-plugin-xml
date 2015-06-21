@@ -475,7 +475,7 @@ class renderer_plugin_xml extends Doku_Renderer {
      * @param string $linking
      */
     function internalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
-        $this->media('internalmedia', $src, $title, $align, $width, $height, $cache, $linking);
+        $this->doc .= $this->_media('internalmedia', $src, $title, $align, $width, $height, $cache, $linking);
     }
 
     /**
@@ -490,41 +490,7 @@ class renderer_plugin_xml extends Doku_Renderer {
      * @param string $linking
      */
     function externalmedia ($src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
-        $this->media('externalmedia', $src, $title, $align, $width, $height, $cache, $linking);
-    }
-
-    /**
-     * Render media elements.
-     * @see Doku_Renderer_xhtml::internalmedia()
-     *
-     * @param string $type Either 'internalmedia' or 'externalmedia'
-     * @param string $src
-     * @param string $title
-     * @param string $align
-     * @param string $width
-     * @param string $height
-     * @param string $cache
-     * @param string $linking
-     */
-    function media($type, $src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking=null) {
-        global $ID;
-        list($ext, $mime, $dl) = mimetype($src, false);
-
-        // Everything is linked directly apart from images without 'linkonly'.
-        $details = (substr($mime, 0, 5)=='image' && $linking!='linkonly');
-        $link_attrs = array('id'=>$ID, 'cache'=>$cache);
-        $href = ml($src, $link_attrs, !$details, null, true);
-
-        // Filename
-        $basename = ($type=='externalmedia') ? basename($src) : noNS($src);
-
-        $this->doc .= '<media type="' . $type . '" src="' . $this->_xmlEntities($src) . '"';
-        $this->doc .= ' basename="' . $basename . '" href="' . $href . '"';
-        $this->doc .= ' mimetype="' . $mime . '" ext="' . $ext . '"';
-        $this->doc .= ' align="' . $align . '" width="' . $width . '" height="' . $height . '"';
-        $this->doc .= ' cache="' . $cache . '" linking="' . $linking . '">'.DOKU_LF;
-        $this->doc .= $this->_xmlEntities($title, $src);
-        $this->doc .= '</media>';
+        $this->doc .= $this->_media('externalmedia', $src, $title, $align, $width, $height, $cache, $linking);
     }
 
     function table_open($maxcols = null, $numrows = null){
@@ -582,6 +548,39 @@ class renderer_plugin_xml extends Doku_Renderer {
         return htmlspecialchars($text,ENT_COMPAT,'UTF-8');
     }
 
+    /**
+     * Render media elements.
+     * @see Doku_Renderer_xhtml::internalmedia()
+     *
+     * @param string $type Either 'internalmedia' or 'externalmedia'
+     * @param string $src
+     * @param string $title
+     * @param string $align
+     * @param string $width
+     * @param string $height
+     * @param string $cache
+     * @param string $linking
+     */
+    function _media($type, $src, $title=null, $align=null, $width=null, $height=null, $cache=null, $linking = null) {
+        global $ID;
+        $link = $src;
+        list($src, $hash) = explode('#', $src, 2);
+        if ($type == 'internalmedia') {
+            resolve_mediaid(getNS($ID), $src, $exists);
+        }
+        $name = $title ? $this->_xmlEntities($title) : $this->_xmlEntities(utf8_basename(noNS($src)));
+        if ($type == 'internalmedia') {
+            $src = ' id="'.$this->_xmlEntities($src).'" hash="'.$this->_xmlEntities($hash).'"';
+        }
+        else {
+            $src = ' src="'.$this->_xmlEntities($src).'"';
+        }
+        $out .= '<media type="'.$type.'" link="'.$this->_xmlEntities($link).'"'.($src).' align="'.$align.'" width="'.$width.'" height="'.$height.'" cache="'.$cache.'" linking="'.$linking.'">'.DOKU_LF;
+        $out .= $name;
+        $out .= '</media>';
+        return $out;
+    }
+
     function _getLinkTitle($title, $default, & $isImage, $id=null, $linktype='content'){
         $isImage = false;
         if ( is_array($title) ) {
@@ -601,11 +600,22 @@ class renderer_plugin_xml extends Doku_Renderer {
     }
 
     function _imageTitle($img) {
-        extract($img);
-        $out .= '<media type="' . $type . '" src="' . $this->_xmlEntities($src) . '" align="' . $align . '" width="' . $width . '" height="' . $height . '" cache="' . $cache . '" linking="' . $linking . '">';
-        $out .= $this->_xmlEntities($title);
-        $out .= '</media>';
-        return $out;
+        global $ID;
+
+        // some fixes on $img['src']
+        // see internalmedia() and externalmedia()
+        list($img['src'], $hash) = explode('#', $img['src'], 2);
+        if ($img['type'] == 'internalmedia') {
+            resolve_mediaid(getNS($ID), $img['src'], $exists);
+        }
+
+        return $this->_media($img['type'],
+                              $img['src'],
+                              $img['title'],
+                              $img['align'],
+                              $img['width'],
+                              $img['height'],
+                              $img['cache']);
     }
     
     function _openTag($class, $func, $data=null) {
