@@ -406,7 +406,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         if ($id === '') $id = $ID;
         $default = $this->_simpleTitle($id);
         resolve_pageid(getNS($ID), $id, $exists);
-        $name = $this->_getLinkTitle($name, $default, $isImage, $id, $linktype);
+        $name = $this->_getLinkTitle($name, $default, $isImage, $id, 'content');
         $this->doc .= '<link type="'.$type.'" link="'.$this->_xmlEntities($link).'" id="'.$id.'" search="'.$this->_xmlEntities($search).'" hash="'.$this->_xmlEntities($hash).'">';
         $this->doc .= $name;
         $this->doc .= '</link>';
