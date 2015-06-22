@@ -575,7 +575,7 @@ class renderer_plugin_xml extends Doku_Renderer {
         else {
             $src = ' src="'.$this->_xmlEntities($src).'"';
         }
-        $out .= '<media type="'.$type.'" link="'.$this->_xmlEntities($link).'"'.($src).' align="'.$align.'" width="'.$width.'" height="'.$height.'" cache="'.$cache.'" linking="'.$linking.'">'.DOKU_LF;
+        $out .= '<media type="'.$type.'" link="'.$this->_xmlEntities($link).'"'.($src).' align="'.$align.'" width="'.$width.'" height="'.$height.'" cache="'.$cache.'" linking="'.$linking.'">';
         $out .= $name;
         $out .= '</media>';
         return $out;
