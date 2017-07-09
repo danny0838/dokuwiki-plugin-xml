@@ -433,7 +433,7 @@ class renderer_plugin_xml extends Doku_Renderer {
     function interwikilink($link, $title = null, $wikiName, $wikiUri) {
         $name = $this->_getLinkTitle($title, $wikiUri, $isImage);
         $url = $this->_resolveInterWiki($wikiName, $wikiUri);
-        $this->doc .= '<link type="interwiki" link="'.$this->_xmlEntities($link).'" href="'.$url.'">';
+        $this->doc .= '<link type="interwiki" link="'.$this->_xmlEntities($link).'" href="'.$this->_xmlEntities($url).'">';
         $this->doc .= $name;
         $this->doc .= '</link>';
     }
@@ -617,7 +617,7 @@ class renderer_plugin_xml extends Doku_Renderer {
                               $img['height'],
                               $img['cache']);
     }
-    
+
     function _openTag($class, $func, $data=null) {
         $this->tagStack[] = array($class, $func, $data);
     }
